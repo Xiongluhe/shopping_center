@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<base th:href="${#request.getContextPath() + '/'}"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Insert title here</title>
+	<!-- Invalid Stylesheet. This makes stuff look pretty. Remove it if you want the CSS completely valid -->
+	<!-- Reset Stylesheet -->
+	<link rel="stylesheet" href="resources/css/reset.css" type="text/css"
+	      media="screen"/>
+	<!-- Main Stylesheet -->
+	<link rel="stylesheet" href="resources/css/style.css" type="text/css"
+	      media="screen"/>
+	<link rel="stylesheet" href="resources/css/invalid.css" type="text/css"
+	      media="screen"/>
+
+	<!--                       Javascripts                       -->
+	<!-- jQuery -->
+	<script type="text/javascript"
+	        src="resources/scripts/jquery-1.8.3.min.js"></script>
+	<!-- jQuery Configuration -->
+	<script src="layui/layui.js" charset="utf-8"></script>
+	<script
+			src="resources/scripts/simpla.jquery.configuration.js"></script>
+	<script>
+        function dialog() {
+            $("#mydialog").dialog({
+                width: 800,
+                height: 600,
+                title: "添加商品",
+                modal: true
+            });
+        }
+	</script>
+
+	<script type="text/javascript">
+        layui.use('upload', function () {
+            var $ = layui.jquery
+                , upload = layui.upload;
+            //多图片上传
+            upload.render({
+                elem: '#test2'
+                , url: '/img/upload'
+                , multiple: true
+                , before: function (obj) {
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function (index, file, result) {
+                        $('#demo2').append('<img src="' + result + '" alt="' + file.name + '" class="layui-upload-img" width="100px">')
+                    });
+                }
+                , done: function (res) {
+                    //上传完毕
+                    $('#demo2').append('<input type="text" value="'+res.data+'" name="otherImgs">')
+                }
+            });
+            //普通图片上传
+            var uploadInst = upload.render({
+                elem: '#test1'
+                , url: '/img/upload'
+                , before: function (obj) {
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function (index, file, result) {
+                        $('#demo1').attr('src', result); //图片链接（base64）
+                    });
+                }
+                , done: function (res) {
+                    //如果上传失败
+                    if (res.code != 200) {
+                        return layer.msg('上传失败');
+                    }
+                    console.info(res)
+                    //上传成功
+                    $('#my_cover').val(res.data)
+                }
+                , error: function () {
+                    //演示失败状态，并实现重传
+                    var demoText = $('#demoText');
+                    demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                    demoText.find('.demo-reload').on('click', function () {
+                        uploadInst.upload();
+                    });
+                }
+            });
+
+        })
+
+	</script>
+	<!-- 添加jquery弹窗的依赖 -->
+
+	<script src="resources/widget/dialog/jquery-ui-1.9.2.custom.min.js"></script>
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/jqueryui/1.10.4/css/jquery-ui.min.css">
+
+	<!-- 引入webuploader依赖 -->
+	<script src="resources/widget/webuploader/webuploader.min.js"></script>
+	<link rel="stylesheet" href="resources/widget/webuploader/webuploader.css"/>
+
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="layui/css/layui.css" media="all">
+
+</head>
+<body>
+
+<div id="main-content">
+	<a class="mybutton" onclick="dialog()">添加商品</a>
+	<div class="content-box">
+		<!-- End .content-box-header -->
+		<div class="content-box-content">
+			<div class="tab-content default-tab" id="tab1">
+				<table>
+					<thead>
+					<tr>
+						<th><input class="check-all" type="checkbox"/></th>
+						<th>标题</th>
+						<th>封面</th>
+						<th>信息</th>
+						<th>价格</th>
+						<th>库存</th>
+					</tr>
+					</thead>
+					<tfoot>
+					<tr>
+						<td colspan="6">
+							<div class="bulk-actions align-left">
+								<select name="dropdown">
+									<option value="option1">Choose an action...</option>
+									<option value="option2">Edit</option>
+									<option value="option3">Delete</option>
+								</select> <a class="mybutton" href="#">Apply to selected</a>
+							</div>
+							<div class="pagination">
+								<a href="#" title="First Page">&laquo; First</a><a href="#"
+								                                                   title="Previous Page">&laquo;
+								Previous</a> <a href="#"
+								                class="number" title="1">1</a> <a href="#" class="number"
+								                                                  title="2">2</a> <a href="#"
+								                                                                     class="number current"
+								                                                                     title="3">3</a>
+								<a href="#" class="number" title="4">4</a> <a href="#"
+								                                              title="Next Page">Next &raquo;</a><a
+									href="#"
+									title="Last Page">Last &raquo;</a>
+							</div> <!-- End .pagination -->
+							<div class="clear"></div>
+						</td>
+					</tr>
+					</tfoot>
+					<tbody>
+
+					<tr th:each="goods : ${goodsList}">
+						<td th:te><input type="checkbox"/></td>
+						<td th:text="${goods.id}">Lorem ipsum dolor</td>
+						<td th:text="${goods.subject}"><a href="#" title="title">Sit amet</a></td>
+						<td><img th:src="|/img/showImg?img=${goods.coverImg}|"></td>
+
+						<td th:text="${#numbers.formatCurrency(goods.price)}">Consectetur adipiscing</td>
+						<td th:text="${goods.save}">Donec tortor diam</td>
+						<td>
+							<!-- Icons --> <a href="#" title="Edit"><img
+								src="resources/images/icons/pencil.png" alt="Edit"/></a> <a
+								href="#" title="Delete"><img
+								src="resources/images/icons/cross.png" alt="Delete"/></a> <a
+								href="#" title="Edit Meta"><img
+								src="resources/images/icons/hammer_screwdriver.png"
+								alt="Edit Meta"/></a>
+						</td>
+					</tr>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!-- End .content-box-content -->
+	</div>
+</div>
+<!-- End #main-content -->
+
+<!-- 添加商品的弹出框 -->
+<div id="mydialog" style="display: none;">
+
+	<div class="content-box-content">
+		<div class="tab-content default-tab" id="tab2">
+			<form action="/goods/insert" method="post">
+				<fieldset>
+					<p>
+						<label>商品标题</label>
+						<input
+								class="text-input medium-input datepicker" type="text"
+								name="subject"/>
+					</p>
+
+					<div class="layui-upload">
+						<button type="button" class="layui-btn" id="test1">上传封面</button>
+						<div class="layui-upload-list">
+							<img class="layui-upload-img" id="demo1" width="100px">
+							<p id="demoText"></p>
+						</div>
+						<input id="my_cover" type="text" name="coverImg">
+					</div>
+
+					<div class="layui-upload">
+						<button type="button" class="layui-btn" id="test2">上传其他图片</button>
+						<blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+							预览图：
+							<div class="layui-upload-list" id="demo2"></div>
+						</blockquote>
+					</div>
+					
+					<p>
+						<label>商品价格</label>
+						<input
+								class="text-input medium-input datepicker" type="text"
+								name="price"/>
+					</p>
+					<p>
+						<label>商品库存</label>
+						<input
+								class="text-input medium-input datepicker" type="text"
+								name="save"/>
+					</p>
+
+					<p>
+						<label>商品描述</label>
+						<textarea class="text-input textarea wysiwyg" id="textarea"
+						          name="info" cols="79" rows="8"></textarea>
+					</p>
+					
+					<p>
+						<button type="submit">添加商品</button>
+					</p>
+
+				</fieldset>
+				<div class="clear"></div>
+				<!-- End .clear -->
+			</form>
+		</div>
+		<!-- End #tab2 -->
+	</div>
+
+</div>
+
+</body>
+</html>
+

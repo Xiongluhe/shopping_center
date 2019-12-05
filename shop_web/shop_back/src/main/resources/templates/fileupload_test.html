@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymelleaf.org">
+<head>
+	<base href="/">
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+
+<input type="file" name="file" id="file">
+<img id="new" alt="" src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1923339723,602474488&fm=26&gp=0.jpg">
+
+</body>
+
+
+<script type="text/javascript"
+        src="resources/scripts/jquery-1.8.3.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#file").change(function(obj) {
+            /* var file =document.getElementById("file");
+			var imgUrl =window.URL.createObjectURL(file.files[0]);
+			var img =document.getElementById('new');
+			img.setAttribute('src',imgUrl); // 修改img标签src属性值 */
+
+            var imgUrl = window.URL.createObjectURL($("#file")[0].files[0]);
+            $("#new").attr("src",imgUrl);
+        });
+    });
+</script>
+</html>
